@@ -37,8 +37,9 @@ export default class HomeScreen extends React.Component {
 
   onClickAvailableNow(newState){
       this.setState(newState);
-      // Code to make the buttons ungreyed out
-      
+      // Code to make the buttons ungreyed out 
+      // Fire Firebase that this tasker is looking for tasks
+
   }
   render() {
     return (

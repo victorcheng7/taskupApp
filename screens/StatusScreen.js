@@ -6,6 +6,7 @@ import {
   StyleSheet,
   TouchableOpacity,
   View,
+  Alert,
 } from 'react-native';
 import { WebBrowser } from 'expo';
 import { MonoText } from '../components/StyledText';
@@ -20,6 +21,25 @@ export default class HomeScreen extends React.Component {
     header: null,
   };
 
+  constructor(props) {
+    super(props);
+    this.state = { 
+      availableNow: false,
+    };
+
+    // Toggle the state every second
+    setInterval(() => (
+      this.setState(previousState => (
+        { isShowingText: !previousState.isShowingText }
+      ))
+    ), 1000);
+  }
+
+  onClickAvailableNow(newState){
+      this.setState(newState);
+      // Code to make the buttons ungreyed out
+      
+  }
   render() {
     return (
       <Container>
@@ -40,13 +60,16 @@ export default class HomeScreen extends React.Component {
         <Content>
           <ListItem style= { styles.availableNow } icon>
               <Text style={{  fontWeight: 'bold' }}> Available Now </Text>
-             <Switch style={styles.center} value={false} />
+             <Switch style={styles.center} 
+                     onValueChange={(value) => this.onClickAvailableNow({availableNow: value})} 
+                     value={this.state.availableNow} />
           </ListItem>
           <TaskList />
         </Content>
       </Container>
     );
   }
+
 
   _maybeRenderDevelopmentModeWarning() {
     if (__DEV__) {

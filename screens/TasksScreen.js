@@ -6,47 +6,88 @@ import {
   TabHeading,
   Icon,
   Text, Card, CardItem, Thumbnail, Button, Left, Body,
-  List, ListItem, Right,
+  List, ListItem, Right, ScrollableTab,
 } from 'native-base';
 import { StyleSheet, ScrollView, View } from 'react-native';
 
 export default class TasksScreen extends React.Component {
   static navigationOptions = {
-    title: 'Gauchos that needs you!',
+    title: 'Requests',
   };
 
   render() {
-    const data = [
+    const dataDriving = [
       {
-        url: 'https://graph.facebook.com/10157194301367028/picture?width=300&height=300',
+        url: 'https://d1nhio0ox7pgb.cloudfront.net/_img/o_collection_png/green_dark_grey/256x256/plain/user.png',
         name: 'Marius Eskedal',
         request: 'Driving, All arround IV',
         time: '00:12',
         pay: '$2.5/Ride',
       },
       {
-        url: 'https://graph.facebook.com/1048111128725506/picture?width=300&height=300',
-        name: 'Navjot Singh',
-        request: 'Cleaning, Bathroom',
-        time: '00:08',
-        pay: '$10/Hour',
-      },
-      {
-        url: 'https://graph.facebook.com/10215865252657669/picture?width=300&height=300',
+        url: 'https://d1nhio0ox7pgb.cloudfront.net/_img/o_collection_png/green_dark_grey/256x256/plain/user.png',
         name: 'Mads Sundseth',
         request: 'Driving, To downtown',
         time: '00:20',
         pay: '$5/Ride',
       },
       {
-        url: 'https://graph.facebook.com/2173747382647349/picture?width=300&height=300',
+        url: 'https://d1nhio0ox7pgb.cloudfront.net/_img/o_collection_png/green_dark_grey/256x256/plain/user.png',
         name: 'Victor Cheng',
         request: 'Driving, To Costco',
         time: '00:05',
         pay: '$3/Ride',
       },
     ];
-    const requests = data.map((user) => (
+    const dataCleaning = [
+      {
+        url: 'https://d1nhio0ox7pgb.cloudfront.net/_img/o_collection_png/green_dark_grey/256x256/plain/user.png',
+        name: 'Navjot Singh',
+        request: 'Cleaning, Bathroom',
+        time: '00:08',
+        pay: '$10/Hour',
+      },
+    ];
+    const requestsDriving = dataDriving.map((user) => (
+      <Card key={user.name} style={styles.card}>
+        <CardItem>
+          <Left>
+            <Thumbnail source={{uri: user.url}} />
+            <Body>
+              <Text>{user.name}</Text>
+              <Text note>Request: {user.request}</Text>
+            </Body>
+          </Left>
+          <Right>
+            <Text>Time left</Text>
+            <Text style={styles.textLarge}>{user.time}</Text>
+          </Right>
+        </CardItem>
+        <CardItem>
+          <Body>
+            <Text style={styles.textLarge}>
+              Ready to pay: {user.pay}
+            </Text>
+          </Body>
+        </CardItem>
+        <CardItem>
+          <Left>
+            <Button transparent textStyle={{color: '#87838B'}}>
+              <Icon name="md-close-circle-outline" />
+              <Text>Reject</Text>
+            </Button>
+          </Left>
+          <Right>
+            <Button transparent textStyle={{color: '#87838B'}}>
+              <Icon name="md-checkmark-circle-outline" />
+              <Text>Accept</Text>
+            </Button>
+          </Right>
+        </CardItem>
+      </Card>
+    ));
+
+    const requestsCleaning = dataCleaning.map((user) => (
       <Card key={user.name} style={styles.card}>
         <CardItem>
           <Left>
@@ -87,41 +128,32 @@ export default class TasksScreen extends React.Component {
 
     return (
       <Container>
-        <ScrollView contentContainerStyle={styles.scroll}>
-          <Container style={styles.cards}>
-            {requests}
-          </Container>
-        </ScrollView>
-        {/* <Tabs>
-          <Tab heading={ <TabHeading><Icon name="md-pricetags" /><Text>Requests</Text></TabHeading>}>
-            <ScrollView>
+        <Tabs renderTabBar={()=> <ScrollableTab />}>
+          <Tab heading={ <TabHeading><Icon name="md-car" /><Text>Driving</Text></TabHeading>}>
+            <ScrollView contentContainerStyle={styles.scroll}>
               <Container style={styles.cards}>
-                {requests}
+                {requestsDriving}
               </Container>
             </ScrollView>
           </Tab>
-          <Tab heading={ <TabHeading><Icon name="md-calendar" /><Text>Upcoming Tasks</Text></TabHeading>}>
-            <List>
-              <ListItem thumbnail>
-                <Left>
-                  <Thumbnail square source={{ uri: 'Image URL' }} />
-                </Left>
-                <Body>
-                  <Text>Sankhadeep</Text>
-                  <Text note numberOfLines={1}>Its time to build a difference . .</Text>
-                </Body>
-                <Right>
-                  <Button transparent>
-                    <Text>View</Text>
-                  </Button>
-                </Right>
-              </ListItem>
-            </List>
+          <Tab heading={ <TabHeading><Icon name="md-home" /><Text>Cleaning</Text></TabHeading>}>
+          <ScrollView contentContainerStyle={styles.scroll}>
+              <Container style={styles.cards}>
+                {requestsCleaning}
+              </Container>
+            </ScrollView>
           </Tab>
-          <Tab heading={ <TabHeading><Icon name="md-done-all" /><Text>History</Text></TabHeading>}>
-            <Text>Test 3</Text>
+          <Tab heading={ <TabHeading><Icon name="md-people" /><Text>Homework</Text></TabHeading>}>
+            <Container style={styles.noRequests}>
+              <Text>No requests yet...</Text>
+            </Container>
           </Tab>
-        </Tabs> */}
+          <Tab heading={ <TabHeading><Icon name="md-notifications" /><Text>Other</Text></TabHeading>}>
+            <Container style={styles.noRequests}>
+              <Text>No requests yet...</Text>
+            </Container>
+          </Tab>
+        </Tabs>
       </Container>
     );
   }
@@ -144,5 +176,10 @@ const styles = StyleSheet.create({
   },
   scroll: {
     height: 900,
+  },
+  noRequests: {
+    flex: 1,
+    justifyContent: 'center',
+    alignItems: 'center',
   }
 });

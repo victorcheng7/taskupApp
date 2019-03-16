@@ -17,16 +17,29 @@ export default class App extends React.Component {
     super(props);
     this.state = {
         isLoadingComplete: false,
+        currentTaskerProfile: null,
+        currentCategories: null,
     };
 
     // Initialize firebase
     if(!firebase.apps.length) { firebase.initializeApp(ApiKeys.FirebaseConfig); }
     firebase.database().ref('taskers/ids').once('value').then((idsSnap) => {
-      const ids = [];
+      let id = null;
       idsSnap.forEach((idSnap) => {
-        ids.push(idSnap.key);
+        if (idSnap.val() === "Test User") {
+          id = idSnap.key;
+        }
       });
-      console.log(ids);
+      firebase.database().ref('taskers').once('value').then((users) => {
+        users.forEach((user) => {
+          if (user.key === id) {
+            this.setState({
+              currentTasker: user.val().tasker_profile,
+              currentCategories: user.val().categories,
+            });
+          }
+        });
+      });
     });
   }
 

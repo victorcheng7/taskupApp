@@ -10,10 +10,46 @@ import {
 } from 'native-base';
 import { StyleSheet, ScrollView, View } from 'react-native';
 
+import * as firebase from 'firebase';
+import ApiKeys from '../constants/ApiKeys.js';
+import 'firebase/auth';
+import 'firebase/database';
+
 export default class TasksScreen extends React.Component {
   static navigationOptions = {
     title: 'Requests',
   };
+
+  constructor(props) {
+    super(props);
+    this.state = {
+        isLoadingComplete: false,
+        currentTaskerProfile: null,
+        currentCategories: null,
+        currentTaskerName: null,
+    };
+
+    if(!firebase.apps.length) { firebase.initializeApp(ApiKeys.FirebaseConfig); }
+    firebase.database().ref('taskers/ids').once('value').then((idsSnap) => {
+      let id = null;
+      idsSnap.forEach((idSnap) => {
+        if (idSnap.val() === "Test User") {
+          id = idSnap.key;
+          this.setState({currentTaskerName: idSnap.val()});
+        }
+      });
+      firebase.database().ref('taskers').once('value').then((users) => {
+        users.forEach((user) => {
+          if (user.key === id) {
+            this.setState({
+              currentTasker: user.val().tasker_profile,
+              currentCategories: user.val().categories,
+            });
+          }
+        });
+      });
+    });
+  }
 
   render() {
     const dataDriving = [

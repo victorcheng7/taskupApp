@@ -15,6 +15,11 @@ import {TaskList} from '../components/ListOfTasks';
 import { Container, Header, Content, List, Button, ListItem, Text, Icon, Left, Body, Right, Switch, Thumbnail } 
 from 'native-base';
 
+import * as firebase from 'firebase';
+import ApiKeys from '../constants/ApiKeys.js';
+import 'firebase/auth';
+import 'firebase/database';
+
 
 export default class HomeScreen extends React.Component {
   static navigationOptions = {
@@ -25,6 +30,9 @@ export default class HomeScreen extends React.Component {
     super(props);
     this.state = { 
       availableNow: false,
+      currentTaskerProfile: null,
+      currentCategories: null,
+      currentUser: null,
     };
 
     // Toggle the state every second
@@ -33,6 +41,32 @@ export default class HomeScreen extends React.Component {
         { isShowingText: !previousState.isShowingText }
       ))
     ), 1000);
+
+    if(!firebase.apps.length) { firebase.initializeApp(ApiKeys.FirebaseConfig); }
+    firebase.database().ref('taskers/ids').once('value').then((idsSnap) => {
+      let id = null;
+      idsSnap.forEach((idSnap) => {
+        if (idSnap.val() === "Test User") {
+          id = idSnap.key;
+          this.setState({currentTaskerName: idSnap.val()});
+        }
+      });
+      firebase.database().ref('taskers').once('value').then((users) => {
+        users.forEach((user) => {
+          if (user.key === id) {
+            this.setState({
+              currentTasker: user.val().tasker_profile,
+              currentCategories: user.val().categories,
+            });
+          }
+        });
+      });
+      firebase.database().ref(`users/${id}/profile`).once('value').then((profile) => {
+        this.setState({
+          currentUser: profile.val(),
+        });
+      });
+    });
   }
 
   onClickAvailableNow(newState){
@@ -46,26 +80,26 @@ export default class HomeScreen extends React.Component {
       <Container>
         <Header />
         <View style={{
-        flexDirection: "row",
-        padding: 10,
-        justifyContent: "space-between",
-        alignItems: "center" 
+          flexDirection: "row",
+          padding: 10,
+          justifyContent: "space-between",
+          alignItems: "center" 
         }}>
         <Thumbnail source={{uri: 'https://scontent-sjc3-1.xx.fbcdn.net/v/t1.0-9/42101555_1951574751531281_7865144489839427584_o.jpg?_nc_cat=108&_nc_ht=scontent-sjc3-1.xx&oh=7ce63cec19f1972cf559b5bbb12a24ff&oe=5D21323A'}} />
           <Text>Victor Cheng</Text>
           <Text note> Completed 9 tasks </Text>
         </View>
-
         <Text style={styles.tagline} note> Make money and meet new students whenever you're free </Text>
-
         <Content>
           <ListItem style= { styles.availableNow } icon>
-              <Text style={{  fontWeight: 'bold' }}> Available Now </Text>
-             <Switch style={styles.center} 
-                     onValueChange={(value) => this.onClickAvailableNow({availableNow: value})} 
-                     value={this.state.availableNow} />
+            <Text style={{  fontWeight: 'bold' }}> Available Now </Text>
+            <Switch
+              style={styles.center} 
+              onValueChange={(value) => this.onClickAvailableNow({availableNow: value})} 
+              value={this.state.availableNow}
+            />
           </ListItem>
-          <TaskList />
+          <TaskList currentCategories={this.state.currentCategories} />
         </Content>
       </Container>
     );

@@ -8,12 +8,20 @@ import {
   View,
   Alert,
 } from 'react-native';
+
+import console from 'console';
 import { WebBrowser } from 'expo';
 import { MonoText } from '../components/StyledText';
-import {TaskList} from '../components/ListOfTasks';
+import TaskList from '../components/ListOfTasks';
 
 import { Container, Header, Content, List, Button, ListItem, Text, Icon, Left, Body, Right, Switch, Thumbnail } 
 from 'native-base';
+
+import * as firebase from 'firebase';
+import ApiKeys from '../constants/ApiKeys.js';
+import 'firebase/auth';
+import 'firebase/database';
+import { getTasker } from '../firebase/tasker';
 
 
 export default class HomeScreen extends React.Component {
@@ -25,7 +33,12 @@ export default class HomeScreen extends React.Component {
     super(props);
     this.state = { 
       availableNow: false,
+      taskerProfile: new Map(),
+      taskerCategories: new Map(),
+      userProfile: new Map(),
+      uid: '',
     };
+
 
     // Toggle the state every second
     setInterval(() => (
@@ -35,42 +48,37 @@ export default class HomeScreen extends React.Component {
     ), 1000);
   }
 
-  onClickAvailableNow(newState){
-      this.setState(newState);
-      // Code to make the buttons ungreyed out 
-      // Fire Firebase that this tasker is looking for tasks
-
+  componentDidMount() {
+    getTasker('DDje16vHzjPiKBksXqwiUrBkIr43', this.taskerCallback);
   }
-  render() {
-    return (
-      <Container>
-        <Header />
-        <View style={{
-        flexDirection: "row",
-        padding: 10,
-        justifyContent: "space-between",
-        alignItems: "center" 
-        }}>
-        <Thumbnail source={{uri: 'https://scontent-sjc3-1.xx.fbcdn.net/v/t1.0-9/42101555_1951574751531281_7865144489839427584_o.jpg?_nc_cat=108&_nc_ht=scontent-sjc3-1.xx&oh=7ce63cec19f1972cf559b5bbb12a24ff&oe=5D21323A'}} />
-          <Text>Victor Cheng</Text>
-          <Text note> Completed 9 tasks </Text>
-        </View>
 
-        <Text style={styles.tagline} note> Make money and meet new students whenever you're free </Text>
+  componentWillUnmount() {
+    console.log('unmounted');
+  }
 
-        <Content>
-          <ListItem style= { styles.availableNow } icon>
-              <Text style={{  fontWeight: 'bold' }}> Available Now </Text>
-             <Switch style={styles.center} 
-                     onValueChange={(value) => this.onClickAvailableNow({availableNow: value})} 
-                     value={this.state.availableNow} />
-          </ListItem>
-          <TaskList />
-        </Content>
-      </Container>
+  taskerCallback = (tasker) => {
+    this.setState({
+      userProfile: tasker.profile,
+      taskerCategories: tasker.categories,
+      taskerProfile: tasker.tasker_profile,
+    });
+  }
+
+  onClickAvailableNow = (newState) => {
+    this.setState(newState);
+    // Code to make the buttons ungreyed out 
+    // Fire Firebase that this tasker is looking for tasks
+  }
+
+  _handleLearnMorePress = () => {
+    WebBrowser.openBrowserAsync('https://docs.expo.io/versions/latest/guides/development-mode');
+  };
+
+  _handleHelpPress = () => {
+    WebBrowser.openBrowserAsync(
+      'https://docs.expo.io/versions/latest/guides/up-and-running.html#can-t-see-your-changes'
     );
-  }
-
+  };
 
   _maybeRenderDevelopmentModeWarning() {
     if (__DEV__) {
@@ -95,15 +103,37 @@ export default class HomeScreen extends React.Component {
     }
   }
 
-  _handleLearnMorePress = () => {
-    WebBrowser.openBrowserAsync('https://docs.expo.io/versions/latest/guides/development-mode');
-  };
-
-  _handleHelpPress = () => {
-    WebBrowser.openBrowserAsync(
-      'https://docs.expo.io/versions/latest/guides/up-and-running.html#can-t-see-your-changes'
+  render() {
+    const { taskerProfile, userProfile, taskerCategories, availableNow } = this.state;
+    return (
+      <Container>
+        <Header />
+        <Content>
+          <ListItem avatar>
+            <Left>
+              <Thumbnail source={{ uri: taskerProfile.url }} />
+            </Left>
+            <Body style={{ height: '100%' }}>
+              <Text>{userProfile.name}</Text>
+              <Text note>{taskerProfile.tagline}</Text>
+            </Body>
+            <Right>
+              <Text note>Tasks completed: 5</Text>
+            </Right>
+          </ListItem>
+          <ListItem style={{ alignSelf: 'center' }}>
+            <Text style={{ fontWeight: 'bold' }}>Available Now </Text>
+            <Switch
+              onValueChange={value => this.onClickAvailableNow({ availableNow: value })}
+              value={availableNow}
+            />
+          </ListItem>
+          <TaskList currentCategories={taskerCategories} />
+        </Content>
+      </Container>
     );
-  };
+  }
+
 }
 
 const styles = StyleSheet.create({

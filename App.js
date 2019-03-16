@@ -12,32 +12,17 @@ export default class App extends React.Component {
   constructor(props) {
     super(props);
     this.state = {
-        isLoadingComplete: false,
+      isLoadingComplete: false,
     };
-
-    // Initialize firebase
-    // if(!firebase.apps.length) { firebase.initializeApp(ApiKeys.FirebaseConfig); }
-    // firebase.database().ref('taskers/ids').once('value').then((idsSnap) => {
-    //   const ids = [];
-    //   idsSnap.forEach((idSnap) => {
-    //     ids.push(idSnap.key);
-    //   });
-    //   console.log(ids);
-    // });
   }
 
 
   async componentDidMount() {
-    getTasker('DDje16vHzjPiKBksXqwiUrBkIr43', this.taskerCallback);
     await Font.loadAsync({
       'Roboto': require('native-base/Fonts/Roboto.ttf'),
       'Roboto_medium': require('native-base/Fonts/Roboto_medium.ttf'),
       ...Ionicons.font,
     });
-  }
-
-  taskerCallback = (tasker) => {
-    console.log(tasker);
   }
 
   _loadResourcesAsync = async () => {

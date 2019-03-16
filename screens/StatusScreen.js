@@ -30,9 +30,9 @@ export default class HomeScreen extends React.Component {
     super(props);
     this.state = { 
       availableNow: false,
-      currentTaskerProfile: null,
-      currentCategories: null,
-      currentUser: null,
+      currentTaskerProfile: new Map(),
+      currentCategories: new Map(),
+      currentUser: new Map(),
     };
 
     // Toggle the state every second
@@ -55,7 +55,7 @@ export default class HomeScreen extends React.Component {
         users.forEach((user) => {
           if (user.key === id) {
             this.setState({
-              currentTasker: user.val().tasker_profile,
+              currentTaskerProfile: user.val().tasker_profile,
               currentCategories: user.val().categories,
             });
           }
@@ -76,30 +76,31 @@ export default class HomeScreen extends React.Component {
 
   }
   render() {
+    const { currentTaskerProfile, currentCategories, currentTaskerName } = this.state;
     return (
       <Container>
         <Header />
-        <View style={{
-          flexDirection: "row",
-          padding: 10,
-          justifyContent: "space-between",
-          alignItems: "center" 
-        }}>
-        <Thumbnail source={{uri: 'https://scontent-sjc3-1.xx.fbcdn.net/v/t1.0-9/42101555_1951574751531281_7865144489839427584_o.jpg?_nc_cat=108&_nc_ht=scontent-sjc3-1.xx&oh=7ce63cec19f1972cf559b5bbb12a24ff&oe=5D21323A'}} />
-          <Text>Victor Cheng</Text>
-          <Text note> Completed 9 tasks </Text>
-        </View>
-        <Text style={styles.tagline} note> Make money and meet new students whenever you're free </Text>
         <Content>
-          <ListItem style= { styles.availableNow } icon>
-            <Text style={{  fontWeight: 'bold' }}> Available Now </Text>
+          <ListItem avatar>
+            <Left>
+              <Thumbnail source={{uri: currentTaskerProfile.url}} />
+            </Left>
+            <Body style={{ height: '100%' }}>
+              <Text>{currentTaskerName}</Text>
+              <Text note>{currentTaskerProfile.tagline}</Text>
+            </Body>
+            <Right>
+              <Text note>Tasks completed: 5</Text>
+            </Right>
+          </ListItem>
+          <ListItem style={{ alignSelf: 'center' }}>
+            <Text style={{ fontWeight: 'bold' }}>Available Now </Text>
             <Switch
-              style={styles.center} 
               onValueChange={(value) => this.onClickAvailableNow({availableNow: value})} 
               value={this.state.availableNow}
             />
           </ListItem>
-          <TaskList currentCategories={this.state.currentCategories} />
+          <TaskList currentCategories={currentCategories} />
         </Content>
       </Container>
     );

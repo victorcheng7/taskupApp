@@ -4,10 +4,32 @@ import { AppLoading, Asset, Font, Icon } from 'expo';
 import AppNavigator from './navigation/AppNavigator';
 import { Ionicons } from '@expo/vector-icons';
 
+//import firebase from 'expo-firebase-app';
+import * as firebase from 'firebase';
+import ApiKeys from './constants/ApiKeys.js'
+
+import 'firebase/auth';
+import 'firebase/database';
+
+
 export default class App extends React.Component {
-  state = {
-    isLoadingComplete: false,
-  };
+  constructor(props) {
+    super(props);
+    this.state = {
+        isLoadingComplete: false,
+    };
+
+    // Initialize firebase
+    if(!firebase.apps.length) { firebase.initializeApp(ApiKeys.FirebaseConfig); }
+    firebase.database().ref('taskers/ids').once('value').then((idsSnap) => {
+      const ids = [];
+      idsSnap.forEach((idSnap) => {
+        ids.push(idSnap.key);
+      });
+      console.log(ids);
+    });
+  }
+
 
   async componentDidMount() {
     await Font.loadAsync({

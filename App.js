@@ -3,13 +3,9 @@ import { Platform, StatusBar, StyleSheet, View } from 'react-native';
 import { AppLoading, Asset, Font, Icon } from 'expo';
 import AppNavigator from './navigation/AppNavigator';
 import { Ionicons } from '@expo/vector-icons';
+import { getTasker } from './firebase/tasker';
 
 //import firebase from 'expo-firebase-app';
-import * as firebase from 'firebase';
-import ApiKeys from './constants/ApiKeys.js'
-
-import 'firebase/auth';
-import 'firebase/database';
 
 
 export default class App extends React.Component {
@@ -20,18 +16,19 @@ export default class App extends React.Component {
     };
 
     // Initialize firebase
-    if(!firebase.apps.length) { firebase.initializeApp(ApiKeys.FirebaseConfig); }
-    firebase.database().ref('taskers/ids').once('value').then((idsSnap) => {
-      const ids = [];
-      idsSnap.forEach((idSnap) => {
-        ids.push(idSnap.key);
-      });
-      console.log(ids);
-    });
+    // if(!firebase.apps.length) { firebase.initializeApp(ApiKeys.FirebaseConfig); }
+    // firebase.database().ref('taskers/ids').once('value').then((idsSnap) => {
+    //   const ids = [];
+    //   idsSnap.forEach((idSnap) => {
+    //     ids.push(idSnap.key);
+    //   });
+    //   console.log(ids);
+    // });
   }
 
 
   async componentDidMount() {
+    getTasker('DDje16vHzjPiKBksXqwiUrBkIr43', this.taskerCallback);
     await Font.loadAsync({
       'Roboto': require('native-base/Fonts/Roboto.ttf'),
       'Roboto_medium': require('native-base/Fonts/Roboto_medium.ttf'),
@@ -39,23 +36,8 @@ export default class App extends React.Component {
     });
   }
 
-  render() {
-    if (!this.state.isLoadingComplete && !this.props.skipLoadingScreen) {
-      return (
-        <AppLoading
-          startAsync={this._loadResourcesAsync}
-          onError={this._handleLoadingError}
-          onFinish={this._handleFinishLoading}
-        />
-      );
-    } else {
-      return (
-        <View style={styles.container}>
-          {Platform.OS === 'ios' && <StatusBar barStyle="default" />}
-          <AppNavigator />
-        </View>
-      );
-    }
+  taskerCallback = (tasker) => {
+    console.log(tasker);
   }
 
   _loadResourcesAsync = async () => {
@@ -83,6 +65,25 @@ export default class App extends React.Component {
   _handleFinishLoading = () => {
     this.setState({ isLoadingComplete: true });
   };
+
+  render() {
+    if (!this.state.isLoadingComplete && !this.props.skipLoadingScreen) {
+      return (
+        <AppLoading
+          startAsync={this._loadResourcesAsync}
+          onError={this._handleLoadingError}
+          onFinish={this._handleFinishLoading}
+        />
+      );
+    } else {
+      return (
+        <View style={styles.container}>
+          {Platform.OS === 'ios' && <StatusBar barStyle="default" />}
+          <AppNavigator />
+        </View>
+      );
+    }
+  }
 }
 
 const styles = StyleSheet.create({

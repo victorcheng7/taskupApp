@@ -6,18 +6,10 @@ import { Ionicons } from '@expo/vector-icons';
 
 //import firebase from 'expo-firebase-app';
 import * as firebase from 'firebase';
+import ApiKeys from './constants/ApiKeys.js'
 
 import 'firebase/auth';
 import 'firebase/database';
-
-const config = {
-  apiKey: 'AIzaSyCFFGwFNvO1_fHHLXjzXW8e7nxx7HLVuk0',
-  authDomain: 'taskup-8a36a.firebaseapp.com',
-  databaseURL: 'https://taskup-8a36a.firebaseio.com',
-  projectId: 'taskup-8a36a',
-  storageBucket: 'taskup-8a36a.appspot.com',
-  messagingSenderId: '81221159592',
-};
 
 
 export default class App extends React.Component {
@@ -28,9 +20,13 @@ export default class App extends React.Component {
     };
 
     // Initialize firebase
-    if(!firebase.apps.length) { firebase.initializeApp(config); }
-    firebase.database().ref('/categories/Driving/ITUedQpWeESsaQObg9gUNsNu0vj2').once('value').then(function(snapshot) {
-      console.log(snapshot);
+    if(!firebase.apps.length) { firebase.initializeApp(ApiKeys.FirebaseConfig); }
+    firebase.database().ref('taskers/ids').once('value').then((idsSnap) => {
+      const ids = [];
+      idsSnap.forEach((idSnap) => {
+        ids.push(idSnap.key);
+      });
+      console.log(ids);
     });
   }
 

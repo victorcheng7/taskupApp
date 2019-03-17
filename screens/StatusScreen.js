@@ -8,9 +8,11 @@ import {
   View,
   Alert,
 } from 'react-native';
+
+import console from 'console';
 import { WebBrowser } from 'expo';
 import { MonoText } from '../components/StyledText';
-import {TaskList} from '../components/ListOfTasks';
+import TaskList from '../components/ListOfTasks';
 
 import { Container, Header, Content, List, Button, ListItem, Text, Icon, Left, Body, Right, Switch, Thumbnail } 
 from 'native-base';
@@ -19,6 +21,7 @@ import * as firebase from 'firebase';
 import ApiKeys from '../constants/ApiKeys.js';
 import 'firebase/auth';
 import 'firebase/database';
+import { getTasker } from '../firebase/tasker';
 
 
 export default class HomeScreen extends React.Component {
@@ -30,10 +33,12 @@ export default class HomeScreen extends React.Component {
     super(props);
     this.state = { 
       availableNow: false,
-      currentTaskerProfile: new Map(),
-      currentCategories: new Map(),
-      currentUser: new Map(),
+      taskerProfile: new Map(),
+      taskerCategories: new Map(),
+      userProfile: new Map(),
+      uid: '',
     };
+
 
     // Toggle the state every second
     setInterval(() => (
@@ -41,70 +46,39 @@ export default class HomeScreen extends React.Component {
         { isShowingText: !previousState.isShowingText }
       ))
     ), 1000);
+  }
 
-    if(!firebase.apps.length) { firebase.initializeApp(ApiKeys.FirebaseConfig); }
-    firebase.database().ref('taskers/ids').once('value').then((idsSnap) => {
-      let id = null;
-      idsSnap.forEach((idSnap) => {
-        if (idSnap.val() === "Test User") {
-          id = idSnap.key;
-          this.setState({currentTaskerName: idSnap.val()});
-        }
-      });
-      firebase.database().ref('taskers').once('value').then((users) => {
-        users.forEach((user) => {
-          if (user.key === id) {
-            this.setState({
-              currentTaskerProfile: user.val().tasker_profile,
-              currentCategories: user.val().categories,
-            });
-          }
-        });
-      });
-      firebase.database().ref(`users/${id}/profile`).once('value').then((profile) => {
-        this.setState({
-          currentUser: profile.val(),
-        });
-      });
+  componentDidMount() {
+    getTasker('DDje16vHzjPiKBksXqwiUrBkIr43', this.taskerCallback);
+  }
+
+  componentWillUnmount() {
+    console.log('unmounted');
+  }
+
+  taskerCallback = (tasker) => {
+    this.setState({
+      userProfile: tasker.profile,
+      taskerCategories: tasker.categories,
+      taskerProfile: tasker.tasker_profile,
     });
   }
 
-  onClickAvailableNow(newState){
-      this.setState(newState);
-      // Code to make the buttons ungreyed out 
-      // Fire Firebase that this tasker is looking for tasks
-
+  onClickAvailableNow = (newState) => {
+    this.setState(newState);
+    // Code to make the buttons ungreyed out 
+    // Fire Firebase that this tasker is looking for tasks
   }
-  render() {
-    const { currentTaskerProfile, currentCategories, currentTaskerName } = this.state;
-    return (
-      <Container>
-        <Content>
-          <ListItem avatar>
-            <Left>
-              <Thumbnail source={{uri: currentTaskerProfile.url}} />
-            </Left>
-            <Body style={{ height: '100%' }}>
-              <Text>{currentTaskerName}</Text>
-              <Text note>{currentTaskerProfile.tagline}</Text>
-            </Body>
-            <Right>
-              <Text note>Tasks completed: 5</Text>
-            </Right>
-          </ListItem>
-          <ListItem style={{ alignSelf: 'center' }}>
-            <Text style={{ fontWeight: 'bold' }}>Available Now </Text>
-            <Switch
-              onValueChange={(value) => this.onClickAvailableNow({availableNow: value})} 
-              value={this.state.availableNow}
-            />
-          </ListItem>
-          <TaskList currentCategories={currentCategories} />
-        </Content>
-      </Container>
+
+  _handleLearnMorePress = () => {
+    WebBrowser.openBrowserAsync('https://docs.expo.io/versions/latest/guides/development-mode');
+  };
+
+  _handleHelpPress = () => {
+    WebBrowser.openBrowserAsync(
+      'https://docs.expo.io/versions/latest/guides/up-and-running.html#can-t-see-your-changes'
     );
-  }
-
+  };
 
   _maybeRenderDevelopmentModeWarning() {
     if (__DEV__) {
@@ -129,15 +103,37 @@ export default class HomeScreen extends React.Component {
     }
   }
 
-  _handleLearnMorePress = () => {
-    WebBrowser.openBrowserAsync('https://docs.expo.io/versions/latest/guides/development-mode');
-  };
-
-  _handleHelpPress = () => {
-    WebBrowser.openBrowserAsync(
-      'https://docs.expo.io/versions/latest/guides/up-and-running.html#can-t-see-your-changes'
+  render() {
+    const { taskerProfile, userProfile, taskerCategories, availableNow } = this.state;
+    return (
+      <Container>
+        <Header />
+        <Content>
+          <ListItem avatar>
+            <Left>
+              <Thumbnail source={{ uri: taskerProfile.url }} />
+            </Left>
+            <Body style={{ height: '100%' }}>
+              <Text>{userProfile.name}</Text>
+              <Text note>{taskerProfile.tagline}</Text>
+            </Body>
+            <Right>
+              <Text note>Tasks completed: 5</Text>
+            </Right>
+          </ListItem>
+          <ListItem style={{ alignSelf: 'center' }}>
+            <Text style={{ fontWeight: 'bold' }}>Available Now </Text>
+            <Switch
+              onValueChange={value => this.onClickAvailableNow({ availableNow: value })}
+              value={availableNow}
+            />
+          </ListItem>
+          <TaskList currentCategories={taskerCategories} />
+        </Content>
+      </Container>
     );
-  };
+  }
+
 }
 
 const styles = StyleSheet.create({

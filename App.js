@@ -3,44 +3,17 @@ import { Platform, StatusBar, StyleSheet, View } from 'react-native';
 import { AppLoading, Asset, Font, Icon } from 'expo';
 import AppNavigator from './navigation/AppNavigator';
 import { Ionicons } from '@expo/vector-icons';
+import { getTasker } from './firebase/tasker';
 
 //import firebase from 'expo-firebase-app';
-import * as firebase from 'firebase';
-import ApiKeys from './constants/ApiKeys.js'
-
-import 'firebase/auth';
-import 'firebase/database';
 
 
 export default class App extends React.Component {
   constructor(props) {
     super(props);
     this.state = {
-        isLoadingComplete: false,
-        currentTaskerProfile: null,
-        currentCategories: null,
+      isLoadingComplete: false,
     };
-
-    // Initialize firebase
-    if(!firebase.apps.length) { firebase.initializeApp(ApiKeys.FirebaseConfig); }
-    firebase.database().ref('taskers/ids').once('value').then((idsSnap) => {
-      let id = null;
-      idsSnap.forEach((idSnap) => {
-        if (idSnap.val() === "Test User") {
-          id = idSnap.key;
-        }
-      });
-      firebase.database().ref('taskers').once('value').then((users) => {
-        users.forEach((user) => {
-          if (user.key === id) {
-            this.setState({
-              currentTasker: user.val().tasker_profile,
-              currentCategories: user.val().categories,
-            });
-          }
-        });
-      });
-    });
   }
 
 
@@ -50,25 +23,6 @@ export default class App extends React.Component {
       'Roboto_medium': require('native-base/Fonts/Roboto_medium.ttf'),
       ...Ionicons.font,
     });
-  }
-
-  render() {
-    if (!this.state.isLoadingComplete && !this.props.skipLoadingScreen) {
-      return (
-        <AppLoading
-          startAsync={this._loadResourcesAsync}
-          onError={this._handleLoadingError}
-          onFinish={this._handleFinishLoading}
-        />
-      );
-    } else {
-      return (
-        <View style={styles.container}>
-          {Platform.OS === 'ios' && <StatusBar barStyle="default" />}
-          <AppNavigator />
-        </View>
-      );
-    }
   }
 
   _loadResourcesAsync = async () => {
@@ -96,6 +50,25 @@ export default class App extends React.Component {
   _handleFinishLoading = () => {
     this.setState({ isLoadingComplete: true });
   };
+
+  render() {
+    if (!this.state.isLoadingComplete && !this.props.skipLoadingScreen) {
+      return (
+        <AppLoading
+          startAsync={this._loadResourcesAsync}
+          onError={this._handleLoadingError}
+          onFinish={this._handleFinishLoading}
+        />
+      );
+    } else {
+      return (
+        <View style={styles.container}>
+          {Platform.OS === 'ios' && <StatusBar barStyle="default" />}
+          <AppNavigator />
+        </View>
+      );
+    }
+  }
 }
 
 const styles = StyleSheet.create({

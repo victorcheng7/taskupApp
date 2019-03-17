@@ -5,7 +5,7 @@ import { Content, List, Button, ListItem, Text, Icon, Left,
 from 'native-base';
 import Colors from '../constants/Colors';
 
-export class TaskList extends React.Component {
+class TaskList extends React.Component {
   constructor(props) {
     super(props);
     this.state = { 
@@ -53,3 +53,5 @@ export class TaskList extends React.Component {
     );
   }
 }
+
+export default TaskList;

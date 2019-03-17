@@ -102,7 +102,6 @@ export default class HomeScreen extends React.Component {
     } = this.state;
     return (
       <Container>
-        <Header />
         <Content>
           <ListItem avatar>
             <Left>

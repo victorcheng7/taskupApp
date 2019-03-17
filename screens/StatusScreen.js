@@ -23,7 +23,7 @@ import 'firebase/database';
 
 export default class HomeScreen extends React.Component {
   static navigationOptions = {
-    header: null,
+    title: 'My Availability',
   };
 
   constructor(props) {
@@ -79,7 +79,6 @@ export default class HomeScreen extends React.Component {
     const { currentTaskerProfile, currentCategories, currentTaskerName } = this.state;
     return (
       <Container>
-        <Header />
         <Content>
           <ListItem avatar>
             <Left>

@@ -1,14 +1,13 @@
 import React from 'react';
 import { View } from 'react-native'
 import { Content, List, Button, ListItem, Text, Icon, Left,
-  Body, Right, Switch, Thumbnail, CheckBox, Card, CardItem } 
-from 'native-base';
+  Body, Right, Switch, Thumbnail, CheckBox, Card, CardItem } from 'native-base';
 import Colors from '../constants/Colors';
 
 class TaskList extends React.Component {
   constructor(props) {
     super(props);
-    this.state = { 
+    this.state = {
       categories: new Map(),
     };
   }
@@ -16,6 +15,10 @@ class TaskList extends React.Component {
   componentWillReceiveProps(nextProps) {
     const { currentCategories } = nextProps;
     this.setState({ categories: currentCategories });
+  }
+
+  setAvailability = (e) => {
+    console.log(e);
   }
 
   render() {
@@ -29,13 +32,14 @@ class TaskList extends React.Component {
               <Text>{category}</Text>
             </ListItem>  
               {
-                Object.keys(categories[category]).map((subCategory) => {
-                  if (subCategory != 'sub_category_ids') {
+                Object.keys(categories[category]).map((subCategoryID) => {
+                  if (subCategoryID != 'sub_category_ids') {
                     return (
-                      <ListItem key={subCategory}>
-                        <CheckBox key={subCategory} />
+                      <ListItem key={subCategoryID}>
+                        {/* <CheckBox value={subCategoryID} checked={false} onPress={this.setAvailability} /> */}
+                        <CheckBox checked={false} />
                         <Body>
-                          <Text>{subCategory}</Text>
+                          <Text>{subCategoryID}</Text>
                         </Body>
                       </ListItem>
                     );

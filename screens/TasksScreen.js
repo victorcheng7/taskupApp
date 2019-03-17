@@ -58,9 +58,11 @@ export default class TasksScreen extends React.Component {
     firebase.database().ref('taskers/ids').once('value').then((idsSnap) => {
       let id = null;
       idsSnap.forEach((idSnap) => {
-        if (idSnap.val() === "Test User") {
+        if (idSnap.val() === 'Test User') {
           id = idSnap.key;
-          this.setState({currentTaskerName: idSnap.val()});
+          this.setState({
+            currentTaskerName: idSnap.val()
+          });
         }
       });
       firebase.database().ref('taskers').once('value').then((users) => {

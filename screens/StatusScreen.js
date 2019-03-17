@@ -1,28 +1,24 @@
-import React, { Component } from 'react';
+import React from 'react';
+import { StyleSheet } from 'react-native';
 import {
-  Image,
-  Platform,
-  ScrollView,
-  StyleSheet,
-  TouchableOpacity,
-  View,
-  Alert,
-} from 'react-native';
-
+  Container, Header, Content, ListItem, Text, Left, Body, Right, Switch, Thumbnail,
+} from 'native-base';
 import console from 'console';
 import { WebBrowser } from 'expo';
-import { MonoText } from '../components/StyledText';
+import { getTasker } from '../firebase/tasker';
 import TaskList from '../components/ListOfTasks';
 
-import { Container, Header, Content, List, Button, ListItem, Text, Icon, Left, Body, Right, Switch, Thumbnail } 
-from 'native-base';
-
-import * as firebase from 'firebase';
-import ApiKeys from '../constants/ApiKeys.js';
-import 'firebase/auth';
-import 'firebase/database';
-import { getTasker } from '../firebase/tasker';
-
+const styles = StyleSheet.create({
+  tagline: {
+    textAlign: 'center',
+    fontSize: 11,
+  },
+  availableNow: {
+    flex: 1,
+    justifyContent: 'center',
+    alignItems: 'center',
+  },
+});
 
 export default class HomeScreen extends React.Component {
   static navigationOptions = {
@@ -31,14 +27,13 @@ export default class HomeScreen extends React.Component {
 
   constructor(props) {
     super(props);
-    this.state = { 
+    this.state = {
       availableNow: false,
       taskerProfile: new Map(),
       taskerCategories: new Map(),
       userProfile: new Map(),
-      uid: '',
+      // uid: '',
     };
-
 
     // Toggle the state every second
     setInterval(() => (
@@ -66,7 +61,7 @@ export default class HomeScreen extends React.Component {
 
   onClickAvailableNow = (newState) => {
     this.setState(newState);
-    // Code to make the buttons ungreyed out 
+    // Code to make the buttons ungreyed out
     // Fire Firebase that this tasker is looking for tasks
   }
 
@@ -75,12 +70,11 @@ export default class HomeScreen extends React.Component {
   };
 
   _handleHelpPress = () => {
-    WebBrowser.openBrowserAsync(
-      'https://docs.expo.io/versions/latest/guides/up-and-running.html#can-t-see-your-changes'
-    );
+    WebBrowser.openBrowserAsync('https://docs.expo.io/versions/latest/guides/up-and-running.html#can-t-see-your-changes');
   };
 
   _maybeRenderDevelopmentModeWarning() {
+    // eslint-disable-next-line no-undef
     if (__DEV__) {
       const learnMoreButton = (
         <Text onPress={this._handleLearnMorePress} style={styles.helpLinkText}>
@@ -90,24 +84,24 @@ export default class HomeScreen extends React.Component {
 
       return (
         <Text style={styles.developmentModeText}>
-          Development mode is enabled, your app will be slower but you can use useful development
-          tools. {learnMoreButton}
-        </Text>
-      );
-    } else {
-      return (
-        <Text style={styles.developmentModeText}>
-          You are not in development mode, your app will run at full speed.
+          {'Development mode is enabled, your app will be slower but you can use useful development tools. '}
+          {learnMoreButton}
         </Text>
       );
     }
+    return (
+      <Text style={styles.developmentModeText}>
+        You are not in development mode, your app will run at full speed.
+      </Text>
+    );
   }
 
   render() {
-    const { taskerProfile, userProfile, taskerCategories, availableNow } = this.state;
+    const {
+      taskerProfile, userProfile, taskerCategories, availableNow,
+    } = this.state;
     return (
       <Container>
-        <Header />
         <Content>
           <ListItem avatar>
             <Left>
@@ -133,17 +127,4 @@ export default class HomeScreen extends React.Component {
       </Container>
     );
   }
-
 }
-
-const styles = StyleSheet.create({
-  tagline: {
-    textAlign: 'center',
-    fontSize: 11,
-  },
-  availableNow: {
-    flex: 1,
-    justifyContent: 'center',
-    alignItems: 'center',
-  }
-});

@@ -1,5 +1,6 @@
 import firebase from './firebaseInit';
 import { getUserProfile } from './user';
+import { getRequestIDs } from './requests';
 
 
 export const isApplier = uid => firebase.database().ref(`appliers/ids/${uid}`).once('value').then(applier => applier.val() !== null);
@@ -11,6 +12,7 @@ export const getTasker = (uid, callback) => {
     const profile = await getUserProfile(uid);
     tasker.profile = profile;
     tasker.profile.uid = uid;
+    tasker.requests = await getRequestIDs(uid);
     callback(tasker);
   });
 };

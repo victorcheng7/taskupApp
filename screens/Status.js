@@ -4,7 +4,7 @@ import { StyleSheet } from 'react-native';
 import {
   Container, Content, ListItem, Text, Left, Body, Right, Switch, Thumbnail,
 } from 'native-base';
-import { getTasker } from '../firebase/tasker';
+import { getTasker, setAvailabilities } from '../firebase/tasker';
 import TaskList from '../components/ListOfTasks';
 
 const styles = StyleSheet.create({
@@ -51,10 +51,8 @@ export default class HomeScreen extends React.Component {
 
   onClickAvailableNow = (newState) => {
     this.setState(newState);
-    // const { }
-    // if (newState.availableNow) {
-
-    // }
+    const { taskerCategories, uid } = this.state;
+    setAvailabilities(taskerCategories, newState.availableNow, uid);
     // Code to make the buttons ungreyed out
     // Fire Firebase that this tasker is looking for tasks
   }

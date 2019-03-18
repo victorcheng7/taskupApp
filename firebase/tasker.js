@@ -18,12 +18,12 @@ export const getTasker = (uid, callback) => {
 };
 
 export const setAvailability = (categoryID, subCategoryID, available, uid) => {
-  firebase.database().ref(`taskers/${uid}/categories/${categoryID}/${subCategoryID}/available`).once('value').set(available);
+  firebase.database().ref(`taskers/${uid}/categories/${categoryID}/${subCategoryID}/available`).set(available);
 };
 
 export const setAvailabilities = (categories, uid) => {
   Object.keys(categories).forEach((categoryID) => {
-    Object.keys(categories[categoryID]).forEach((subCategoryID) => {
+    Object.keys(categories[categoryID].sub_category_ids).forEach((subCategoryID) => {
       setAvailability(categoryID, subCategoryID, categories.get(categoryID).get(subCategoryID).get('available'), uid);
     });
   });

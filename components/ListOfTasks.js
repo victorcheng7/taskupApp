@@ -1,54 +1,101 @@
 import React from 'react';
-import { View } from 'react-native'
-import { Content, List, Button, ListItem, Text, Icon, Left,
-  Body, Right, Switch, Thumbnail, CheckBox, Card, CardItem } 
-from 'native-base';
-import Colors from '../constants/Colors';
+import { View } from 'react-native';
+import {
+  List, ListItem, Text, Body, CheckBox,
+} from 'native-base';
+import PropTypes from 'prop-types';
 
 class TaskList extends React.Component {
+  static propTypes = {
+    currentCategories: PropTypes.object.isRequired,
+  }
+
   constructor(props) {
     super(props);
-    this.state = { 
+    this.state = {
       categories: new Map(),
+      checks: new Map(),
     };
+    this.makeCheckboxes = this.makeCheckboxes.bind(this);
+    this.handleCheckbox = this.handleCheckbox.bind(this);
   }
 
   componentWillReceiveProps(nextProps) {
     const { currentCategories } = nextProps;
+    Object.keys(currentCategories).map((categoryID) => {
+      if (categoryID !== 'category_ids') {
+        Object.keys(currentCategories[categoryID]).map((subCategoryID) => {
+          if (subCategoryID !== 'sub_category_ids') {
+            Object.keys(currentCategories[categoryID][subCategoryID]).map((value) => {
+              if (value === 'available') {
+                console.log(currentCategories[categoryID][subCategoryID][value]);
+                this.makeCheckboxes(
+                  categoryID,
+                  subCategoryID,
+                  currentCategories[categoryID][subCategoryID][value],
+                );
+              }
+            });
+          }
+        });
+      }
+    });
     this.setState({ categories: currentCategories });
   }
 
+  makeCheckboxes(categoryID, subCategoryID, value) {
+    const { checks } = this.state;
+    if (!(checks.has(categoryID))) {
+      checks.set(categoryID, new Map());
+    }
+    checks.get(categoryID).set(subCategoryID, value);
+    this.setState({ checks });
+  }
+
+  handleCheckbox(categoryID, subCategoryID) {
+    const { checks } = this.state;
+    checks.get(categoryID).set(subCategoryID, !checks.get(categoryID).get(subCategoryID));
+    console.log(checks);
+    this.setState({ checks });
+  }
+
   render() {
-    const { categories } = this.state;
-    const checkboxes = [];
-    Object.keys(categories).map((category) => {
-      if (category != 'category_ids') {
-        checkboxes.push(
-          <List key={category}>
-            <ListItem itemDivider>
-              <Text>{category}</Text>
-            </ListItem>  
-              {
-                Object.keys(categories[category]).map((subCategory) => {
-                  if (subCategory != 'sub_category_ids') {
-                    return (
-                      <ListItem key={subCategory}>
-                        <CheckBox key={subCategory} />
-                        <Body>
-                          <Text>{subCategory}</Text>
-                        </Body>
-                      </ListItem>
-                    );
-                  }
-                })
-              }
-          </List>
-        );
-      }
-    })
+    const { categories, checks } = this.state;
     return (
       <View>
-        {checkboxes}
+        {
+          Object.keys(categories).map((categoryID) => {
+            if (categoryID !== 'category_ids') {
+              return (
+                <List key={categoryID}>
+                  <ListItem itemDivider>
+                    <Text>{categoryID}</Text>
+                  </ListItem>
+                  {
+                    Object.keys(categories[categoryID]).map((subCategoryID) => {
+                      if (subCategoryID !== 'sub_category_ids') {
+                        return (
+                          <ListItem key={subCategoryID}>
+                            <CheckBox
+                              key={subCategoryID}
+                              checked={checks.get(categoryID).get(subCategoryID)}
+                              onPress={() => this.handleCheckbox(categoryID, subCategoryID)}
+                            />
+                            <Body>
+                              <Text>{subCategoryID}</Text>
+                            </Body>
+                          </ListItem>
+                        );
+                      }
+                      return null;
+                    })
+                  }
+                </List>
+              );
+            }
+            return null;
+          })
+        }
       </View>
     );
   }

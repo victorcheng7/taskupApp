@@ -14,6 +14,8 @@ import * as firebase from 'firebase';
 import ApiKeys from '../constants/ApiKeys.js';
 import 'firebase/auth';
 import 'firebase/database';
+import TabBarIcon from '../components/TabBarIcon';
+import { getTasker } from '../firebase/tasker.js';
 
 const styles = StyleSheet.create({
   cards: {
@@ -42,37 +44,42 @@ const styles = StyleSheet.create({
 
 export default class TasksScreen extends React.Component {
   static navigationOptions = {
-    title: 'Requests',
+    title: 'Tasks',
   };
 
   constructor(props) {
     super(props);
     this.state = {
-        isLoadingComplete: false,
-        currentTaskerProfile: null,
-        currentCategories: null,
-        currentTaskerName: null,
+      availableNow: false,
+      taskerProfile: {},
+      taskerCategories: {},
+      userProfile: {},
+      uid: 'DDje16vHzjPiKBksXqwiUrBkIr43',
     };
 
-    if(!firebase.apps.length) { firebase.initializeApp(ApiKeys.FirebaseConfig); }
-    firebase.database().ref('taskers/ids').once('value').then((idsSnap) => {
-      let id = null;
-      idsSnap.forEach((idSnap) => {
-        if (idSnap.val() === "Test User") {
-          id = idSnap.key;
-          this.setState({currentTaskerName: idSnap.val()});
-        }
-      });
-      firebase.database().ref('taskers').once('value').then((users) => {
-        users.forEach((user) => {
-          if (user.key === id) {
-            this.setState({
-              currentTasker: user.val().tasker_profile,
-              currentCategories: user.val().categories,
-            });
-          }
-        });
-      });
+    // Toggle the state every second
+    setInterval(() => (
+      this.setState(previousState => (
+        { isShowingText: !previousState.isShowingText }
+      ))
+    ), 1000);
+  }
+
+  componentDidMount() {
+    const { uid } = this.state;
+    // console.log(this.props);
+    getTasker(uid, this.taskerCallback);
+  }
+
+  componentWillUnmount() {
+    console.log('unmounted status');
+  }
+
+  taskerCallback = (tasker) => {
+    this.setState({
+      userProfile: tasker.profile,
+      taskerCategories: tasker.categories,
+      taskerProfile: tasker.tasker_profile,
     });
   }
 

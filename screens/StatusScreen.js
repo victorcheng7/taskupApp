@@ -3,10 +3,11 @@ import { StyleSheet } from 'react-native';
 import {
   Container, Header, Content, ListItem, Text, Left, Body, Right, Switch, Thumbnail,
 } from 'native-base';
-import console from 'console';
+// import console from 'console';
 import { WebBrowser } from 'expo';
 import { getTasker } from '../firebase/tasker';
 import TaskList from '../components/ListOfTasks';
+import FooterTabsBadge from '../footer/Footer';
 
 const styles = StyleSheet.create({
   tagline: {
@@ -22,17 +23,17 @@ const styles = StyleSheet.create({
 
 export default class HomeScreen extends React.Component {
   static navigationOptions = {
-    title: 'My Availability',
+    title: 'Home',
   };
 
   constructor(props) {
     super(props);
     this.state = {
       availableNow: false,
-      taskerProfile: new Map(),
-      taskerCategories: new Map(),
-      userProfile: new Map(),
-      // uid: '',
+      taskerProfile: {},
+      taskerCategories: {},
+      userProfile: {},
+      uid: 'DDje16vHzjPiKBksXqwiUrBkIr43',
     };
 
     // Toggle the state every second
@@ -44,11 +45,13 @@ export default class HomeScreen extends React.Component {
   }
 
   componentDidMount() {
-    getTasker('DDje16vHzjPiKBksXqwiUrBkIr43', this.taskerCallback);
+    const { uid } = this.state;
+    // console.log(this.props);
+    getTasker(uid, this.taskerCallback);
   }
 
   componentWillUnmount() {
-    console.log('unmounted');
+    console.log('unmounted status');
   }
 
   taskerCallback = (tasker) => {
@@ -101,30 +104,33 @@ export default class HomeScreen extends React.Component {
       taskerProfile, userProfile, taskerCategories, availableNow,
     } = this.state;
     return (
-      <Container>
-        <Content>
-          <ListItem avatar>
-            <Left>
-              <Thumbnail source={{ uri: taskerProfile.url }} />
-            </Left>
-            <Body style={{ height: '100%' }}>
-              <Text>{userProfile.name}</Text>
-              <Text note>{taskerProfile.tagline}</Text>
-            </Body>
-            <Right>
-              <Text note>Tasks completed: 5</Text>
-            </Right>
-          </ListItem>
-          <ListItem style={{ alignSelf: 'center' }}>
-            <Text style={{ fontWeight: 'bold' }}>Available Now </Text>
-            <Switch
-              onValueChange={value => this.onClickAvailableNow({ availableNow: value })}
-              value={availableNow}
-            />
-          </ListItem>
-          <TaskList currentCategories={taskerCategories} />
-        </Content>
-      </Container>
+      <div>
+        <Container>
+          <Content>
+            <ListItem avatar>
+              <Left>
+                <Thumbnail source={{ uri: taskerProfile.url }} />
+              </Left>
+              <Body style={{ height: '100%' }}>
+                <Text>{userProfile.name}</Text>
+                <Text note>{taskerProfile.tagline}</Text>
+              </Body>
+              <Right>
+                <Text note>Tasks completed: 5</Text>
+              </Right>
+            </ListItem>
+            <ListItem style={{ alignSelf: 'center' }}>
+              <Text style={{ fontWeight: 'bold' }}>Available Now </Text>
+              <Switch
+                onValueChange={value => this.onClickAvailableNow({ availableNow: value })}
+                value={availableNow}
+              />
+            </ListItem>
+            <TaskList currentCategories={taskerCategories} />
+          </Content>
+        </Container>
+        <FooterTabsBadge />
+      </div>
     );
   }
 }

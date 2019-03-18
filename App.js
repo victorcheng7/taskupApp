@@ -4,6 +4,7 @@ import { AppLoading, Asset, Font, Icon } from 'expo';
 import AppNavigator from './navigation/AppNavigator';
 import { Ionicons } from '@expo/vector-icons';
 import { getTasker } from './firebase/tasker';
+import HomeScreen from './screens/StatusScreen';
 
 //import firebase from 'expo-firebase-app';
 
@@ -41,7 +42,7 @@ export default class App extends React.Component {
     ]);
   };
 
-  _handleLoadingError = error => {
+  _handleLoadingError = (error) => {
     // In this case, you might want to report the error to your error
     // reporting service, for example Sentry
     console.warn(error);
@@ -52,7 +53,9 @@ export default class App extends React.Component {
   };
 
   render() {
-    if (!this.state.isLoadingComplete && !this.props.skipLoadingScreen) {
+    const { isLoadingComplete } = this.state;
+    console.log( isLoadingComplete );
+    if (!this.state.isLoadingComplete) {
       return (
         <AppLoading
           startAsync={this._loadResourcesAsync}
@@ -60,14 +63,17 @@ export default class App extends React.Component {
           onFinish={this._handleFinishLoading}
         />
       );
-    } else {
+    } else if (this.state.isLoadingComplete) { 
       return (
         <View style={styles.container}>
           {Platform.OS === 'ios' && <StatusBar barStyle="default" />}
+          {/* <HomeScreen /> */}
+
           <AppNavigator />
         </View>
       );
     }
+    return null;
   }
 }
 

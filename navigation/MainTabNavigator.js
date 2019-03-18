@@ -4,11 +4,22 @@ import { createStackNavigator, createBottomTabNavigator } from 'react-navigation
 
 import TabBarIcon from '../components/TabBarIcon';
 import HomeScreen from '../screens/StatusScreen';
-import LinksScreen from '../screens/TasksScreen';
+import TasksScreen from '../screens/TasksScreen';
 // import SettingsScreen from '../screens/SettingsScreen';
 
+const mapNavigationStateParamsToProps = (SomeComponent) => {
+  return class extends React.Component {
+    static navigationOptions = SomeComponent.navigationOptions; // better use hoist-non-react-statics
+
+    render() {
+      const { navigation: {state: {params}}} = this.props;
+      return <SomeComponent {...params} {...this.props} />;
+    }
+  };
+};
+
 const HomeStack = createStackNavigator({
-  Home: HomeScreen,
+  Home: { screen: mapNavigationStateParamsToProps(HomeScreen) },
 });
 
 HomeStack.navigationOptions = {
@@ -21,18 +32,20 @@ HomeStack.navigationOptions = {
   ),
 };
 
-const LinksStack = createStackNavigator({
-  Links: LinksScreen,
+const TasksStack = createStackNavigator({
+  Tasks: { screen: mapNavigationStateParamsToProps(TasksScreen) },
 });
 
-LinksStack.navigationOptions = {
+TasksStack.navigationOptions = {
   tabBarLabel: 'My Tasks',
-  tabBarIcon: ({ focused }) => (
-    <TabBarIcon
-      focused={focused}
-      name='md-notifications'
-    />
-  ),
+  tabBarIcon: ({ focused }) => {
+    return (
+      <TabBarIcon
+        focused={focused}
+        name='md-notifications'
+      />
+    );
+  },
 };
 
 // const SettingsStack = createStackNavigator({
@@ -51,6 +64,6 @@ LinksStack.navigationOptions = {
 
 export default createBottomTabNavigator({
   HomeStack,
-  LinksStack,
+  TasksStack,
   // SettingsStack,
 });

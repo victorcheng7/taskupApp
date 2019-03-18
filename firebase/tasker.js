@@ -18,6 +18,7 @@ export const getTasker = (uid, callback) => {
 };
 
 export const setAvailability = (categoryID, subCategoryID, available, uid) => {
+  console.log(categoryID, subCategoryID, available, uid);
   firebase.database().ref(`taskers/${uid}/categories/${categoryID}/${subCategoryID}/available`).set(available);
 };
 

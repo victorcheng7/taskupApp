@@ -1,6 +1,6 @@
 import React from 'react';
 import { Router, Scene } from 'react-native-router-flux';
-import Status from './screens/Status';
+import Status from './screens/StatusScreen';
 import Login from './screens/Login';
 
 const Routes = () => (

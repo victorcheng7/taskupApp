@@ -35,8 +35,9 @@ export default class HomeScreen extends React.Component {
     this.state = {
       availableNow: false,
       taskerProfile: new Map(),
-      taskerCategories: new Map(),
+      taskerCategories: null,
       userProfile: new Map(),
+      uid: props.uid,
     };
 
     // Toggle the state every second
@@ -48,7 +49,8 @@ export default class HomeScreen extends React.Component {
   }
 
   componentDidMount() {
-    getTasker('DDje16vHzjPiKBksXqwiUrBkIr43', this.taskerCallback);
+    const { uid } = this.state;
+    getTasker(uid, this.taskerCallback);
   }
 
   componentWillUnmount() {
@@ -102,9 +104,8 @@ export default class HomeScreen extends React.Component {
 
   render() {
     const {
-      taskerProfile, userProfile, taskerCategories, availableNow,
+      taskerProfile, userProfile, taskerCategories, availableNow, uid,
     } = this.state;
-    const { uid } = this.props;
     return (
       <Container>
         <Content>
@@ -127,7 +128,9 @@ export default class HomeScreen extends React.Component {
               value={availableNow}
             />
           </ListItem>
-          <TaskList currentCategories={taskerCategories} uid={uid} />
+          {
+            taskerCategories && <TaskList currentCategories={taskerCategories} uid={uid} />
+          }
         </Content>
       </Container>
     );

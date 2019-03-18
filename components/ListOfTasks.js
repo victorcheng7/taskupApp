@@ -4,10 +4,12 @@ import {
   List, ListItem, Text, Body, CheckBox,
 } from 'native-base';
 import PropTypes from 'prop-types';
+import { setAvailabilities } from '../firebase/tasker';
 
 class TaskList extends React.Component {
   static propTypes = {
     currentCategories: PropTypes.object.isRequired,
+    uid: PropTypes.string.isRequired,
   }
 
   constructor(props) {
@@ -48,15 +50,18 @@ class TaskList extends React.Component {
     if (!(checks.has(categoryID))) {
       checks.set(categoryID, new Map());
     }
-    checks.get(categoryID).set(subCategoryID, value);
+    checks.get(categoryID).set(subCategoryID, new Map());
+    checks.get(categoryID).get(subCategoryID).set('available', value);
     this.setState({ checks });
   }
 
   handleCheckbox(categoryID, subCategoryID) {
     const { checks } = this.state;
-    checks.get(categoryID).set(subCategoryID, !checks.get(categoryID).get(subCategoryID));
+    const { uid } = this.props;
+    checks.get(categoryID).get(subCategoryID).set('available', !checks.get(categoryID).get(subCategoryID).get('available'));
     console.log(checks);
     this.setState({ checks });
+    setAvailabilities(checks, uid);
   }
 
   render() {
@@ -78,7 +83,7 @@ class TaskList extends React.Component {
                           <ListItem key={subCategoryID}>
                             <CheckBox
                               key={subCategoryID}
-                              checked={checks.get(categoryID).get(subCategoryID)}
+                              checked={checks.get(categoryID).get(subCategoryID).get('available')}
                               onPress={() => this.handleCheckbox(categoryID, subCategoryID)}
                             />
                             <Body>

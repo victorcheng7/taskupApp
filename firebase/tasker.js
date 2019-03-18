@@ -21,10 +21,10 @@ export const setAvailability = (categoryID, subCategoryID, available, uid) => {
   firebase.database().ref(`taskers/${uid}/categories/${categoryID}/${subCategoryID}/available`).once('value').set(available);
 };
 
-export const setAvailabilities = (categories, available, uid) => {
+export const setAvailabilities = (categories, uid) => {
   Object.keys(categories).forEach((categoryID) => {
     Object.keys(categories[categoryID]).forEach((subCategoryID) => {
-      setAvailability(categoryID, subCategoryID, available, uid);
+      setAvailability(categoryID, subCategoryID, categories.get(categoryID).get(subCategoryID).get('available'), uid);
     });
   });
 };

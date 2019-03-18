@@ -39,11 +39,7 @@ const styles = StyleSheet.create({
   },
 });
 
-export default class TasksScreen extends React.Component {
-  static navigationOptions = {
-    title: 'Tasks',
-  };
-
+export default class RequestsScreen extends React.Component {
   constructor(props) {
     super(props);
     this.state = {

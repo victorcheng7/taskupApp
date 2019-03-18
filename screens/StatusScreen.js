@@ -3,10 +3,9 @@ import { StyleSheet } from 'react-native';
 import {
   Container, Content, ListItem, Text, Left, Body, Right, Switch, Thumbnail,
 } from 'native-base';
-import console from 'console';
 import { WebBrowser } from 'expo';
 import PropTypes from 'prop-types';
-import { getTasker } from '../firebase/tasker';
+import { getTasker, setAllAvailabilities } from '../firebase/tasker';
 import TaskList from '../components/ListOfTasks';
 
 const styles = StyleSheet.create({
@@ -129,7 +128,7 @@ export default class HomeScreen extends React.Component {
             />
           </ListItem>
           {
-            taskerCategories && <TaskList currentCategories={taskerCategories} uid={uid} />
+            taskerCategories && <TaskList currentCategories={taskerCategories} uid={uid} availableNow={availableNow} />
           }
         </Content>
       </Container>

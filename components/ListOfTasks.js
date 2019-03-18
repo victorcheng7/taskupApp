@@ -4,7 +4,7 @@ import {
   List, ListItem, Text, Body, CheckBox,
 } from 'native-base';
 import PropTypes from 'prop-types';
-import { setAvailability } from '../firebase/tasker';
+import { setAvailability, setAllAvailabilities } from '../firebase/tasker';
 
 class TaskList extends React.Component {
   static propTypes = {
@@ -44,27 +44,24 @@ class TaskList extends React.Component {
     this.setState({ categories: currentCategories });
   }
 
-  // componentWillReceiveProps(nextProps) {
-  //   const { currentCategories } = nextProps;
-  //   Object.keys(currentCategories).map((categoryID) => {
-  //     if (categoryID !== 'category_ids') {
-  //       Object.keys(currentCategories[categoryID]).map((subCategoryID) => {
-  //         if (subCategoryID !== 'sub_category_ids') {
-  //           Object.keys(currentCategories[categoryID][subCategoryID]).map((value) => {
-  //             if (value === 'available') {
-  //               this.makeCheckboxes(
-  //                 categoryID,
-  //                 subCategoryID,
-  //                 currentCategories[categoryID][subCategoryID][value],
-  //               );
-  //             }
-  //           });
-  //         }
-  //       });
-  //     }
-  //   });
-  //   this.setState({ categories: currentCategories });
-  // }
+  componentWillReceiveProps(nextProps) {
+    const { availableNow } = nextProps;
+    const { categories, checks } = this.state;
+    const { uid } = this.props;
+    const currentAvailableNow = this.props.availableNow;
+    if (availableNow !== currentAvailableNow) {
+      if (!availableNow) {
+        setAllAvailabilities(categories, false, uid);
+      } else {
+        Object.keys(categories.category_ids).forEach((categoryID) => {
+          Object.keys(categories[categoryID].sub_category_ids).forEach((subCategoryID) => {
+            setAvailability(categoryID, subCategoryID, checks.get(categoryID).get(subCategoryID).get('available'), uid);
+          });
+        });
+      }
+    }
+
+  }
 
   makeCheckboxes(categoryID, subCategoryID, value) {
     const { checks } = this.state;
@@ -78,9 +75,11 @@ class TaskList extends React.Component {
 
   handleCheckbox(categoryID, subCategoryID) {
     const { checks } = this.state;
-    const { uid } = this.props;
+    const { uid, availableNow } = this.props;
     checks.get(categoryID).get(subCategoryID).set('available', !checks.get(categoryID).get(subCategoryID).get('available'));
-    setAvailability(categoryID, subCategoryID, checks.get(categoryID).get(subCategoryID).get('available'), uid);
+    if (availableNow) {
+      setAvailability(categoryID, subCategoryID, checks.get(categoryID).get(subCategoryID).get('available'), uid);
+    }
     this.setState({ checks });
   }
 

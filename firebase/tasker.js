@@ -23,9 +23,17 @@ export const setAvailability = (categoryID, subCategoryID, available, uid) => {
 };
 
 export const setAvailabilities = (categories, uid) => {
-  Object.keys(categories).forEach((categoryID) => {
+  Object.keys(categories.category_ids).forEach((categoryID) => {
     Object.keys(categories[categoryID].sub_category_ids).forEach((subCategoryID) => {
       setAvailability(categoryID, subCategoryID, categories.get(categoryID).get(subCategoryID).get('available'), uid);
+    });
+  });
+};
+
+export const setAllAvailabilities = (categories, available, uid) => {
+  Object.keys(categories.category_ids).forEach((categoryID) => {
+    Object.keys(categories[categoryID].sub_category_ids).forEach((subCategoryID) => {
+      setAvailability(categoryID, subCategoryID, available, uid);
     });
   });
 };

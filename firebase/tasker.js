@@ -28,4 +28,3 @@ export const setAvailabilities = (categories, available, uid) => {
     });
   });
 };
-// export default getTasker;

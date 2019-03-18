@@ -1,5 +1,7 @@
 import * as firebase from 'firebase';
+import { Facebook } from 'expo';
 import ApiKeys from '../constants/ApiKeys';
+
 
 import 'firebase/auth';
 import 'firebase/database';
@@ -35,5 +37,29 @@ export const copyFbRecord = (oldRef, newRef) => {
   });
 };
 
+
+export const loginWithFacebook = async () => {
+  const { type, token } = await Facebook.logInWithReadPermissionsAsync('254638235448042');
+
+  if (type === 'success') {
+    // Build Firebase credential with the Facebook access token.
+    const credential = firebase.auth.FacebookAuthProvider.credential(token);
+
+    // Sign in with credential from the Facebook user.
+    firebase.auth().signInAndRetrieveDataWithCredential(credential).catch((error) => {
+      // Handle Errors here.
+      console.log(error);
+    });
+  }
+};
+
+export const loginWithFirebase = async (email, password) => {
+  firebase.auth().signInWithEmailAndPassword(email, password).catch((error) => {
+    const errorCode = error.code;
+    const errorMessage = error.message;
+    console.log(errorCode, errorMessage);
+  });
+  console.log('Logged in');
+};
 
 export default firebase;

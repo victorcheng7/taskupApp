@@ -6,16 +6,13 @@ import {
   TabHeading,
   Icon,
   Text, Card, CardItem, Thumbnail, Button, Left, Body,
-  List, ListItem, Right, ScrollableTab,
+  Right, ScrollableTab,
 } from 'native-base';
-import { StyleSheet, ScrollView, View } from 'react-native';
+import { StyleSheet, ScrollView } from 'react-native';
 
-import * as firebase from 'firebase';
-import ApiKeys from '../constants/ApiKeys.js';
 import 'firebase/auth';
 import 'firebase/database';
-import TabBarIcon from '../components/TabBarIcon';
-import { getTasker } from '../firebase/tasker.js';
+import { getTasker } from '../firebase/tasker';
 
 const styles = StyleSheet.create({
   cards: {

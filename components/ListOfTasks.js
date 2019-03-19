@@ -21,6 +21,7 @@ const styles = StyleSheet.create({
   },
   categoryTitle: {
     alignSelf: 'center',
+    marginLeft: -10,
   },
 });
 

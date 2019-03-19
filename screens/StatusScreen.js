@@ -6,7 +6,7 @@ import {
 } from 'native-base';
 import { WebBrowser } from 'expo';
 import PropTypes from 'prop-types';
-import { getTasker } from '../firebase/tasker';
+import { getTasker, taskerAvailabiltyListen, setTaskerAvailabilty } from '../firebase/tasker';
 import TaskList from '../components/ListOfTasks';
 
 const styles = StyleSheet.create({
@@ -49,19 +49,13 @@ export default class HomeScreen extends React.Component {
   constructor(props) {
     super(props);
     this.state = {
-      availableNow: false,
-      taskerProfile: new Map(),
+      taskerProfile: {
+        available: false,
+      },
       taskerCategories: null,
       userProfile: new Map(),
       uid: props.uid,
     };
-
-    // Toggle the state every second
-    setInterval(() => (
-      this.setState(previousState => (
-        { isShowingText: !previousState.isShowingText }
-      ))
-    ), 1000);
   }
 
   componentDidMount() {
@@ -82,10 +76,8 @@ export default class HomeScreen extends React.Component {
   }
 
   onClickAvailableNow = () => {
-    const { availableNow } = this.state;
-    this.setState({ availableNow: !availableNow });
-    // Code to make the buttons ungreyed out
-    // Fire Firebase that this tasker is looking for tasks
+    const { taskerProfile, uid } = this.state;
+    setTaskerAvailabilty(uid, !taskerProfile.available);
   }
 
   _handleLearnMorePress = () => {
@@ -121,15 +113,17 @@ export default class HomeScreen extends React.Component {
 
   render() {
     const {
-      taskerProfile, userProfile, taskerCategories, availableNow, uid,
+      taskerProfile, userProfile, taskerCategories, uid,
     } = this.state;
+    const { available } = taskerProfile;
+    console.log('render:', !available);
     return (
       <Container>
         <Content>
           <ListItem avatar>
             <Left>
               <Thumbnail large source={{ uri: taskerProfile.url }} />
-              <View style={availableNow ? styles.greenDot : styles.grayDot} />
+              <View style={available ? styles.greenDot : styles.grayDot} />
             </Left>
             <Body style={{ height: '100%' }}>
               <Text>{userProfile.name}</Text>
@@ -141,17 +135,17 @@ export default class HomeScreen extends React.Component {
           </ListItem>
           <Button
             style={styles.availableBtn}
-            success={availableNow}
-            light={!availableNow}
+            success={available}
+            light={!available}
             iconLeft
             rounded
             onPress={this.onClickAvailableNow}
           >
-            <Icon name={availableNow ? 'md-checkbox-outline' : 'md-square-outline'} />
+            <Icon name={available ? 'md-checkbox-outline' : 'md-square-outline'} />
             <Text>Available Now</Text>
           </Button>
           {
-            taskerCategories && <TaskList currentCategories={taskerCategories} uid={uid} availableNow={availableNow} />
+            taskerCategories && <TaskList currentCategories={taskerCategories} uid={uid} availableNow={available} />
           }
         </Content>
       </Container>

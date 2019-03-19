@@ -17,6 +17,15 @@ export const getTasker = (uid, callback) => {
   });
 };
 
+export const taskerAvailabiltyListen = (uid, callback) => {
+  firebase.database().ref(`taskers/${uid}/tasker_profile/available`).on('value', async (available) => {
+    callback(available);
+  });
+};
+
+export const setTaskerAvailabilty = (uid, available) => firebase.database().ref(`taskers/${uid}/tasker_profile/available`).set(available);
+
+
 export const setAvailability = (categoryID, subCategoryID, available, uid) => {
   firebase.database().ref(`taskers/${uid}/categories/${categoryID}/${subCategoryID}/available`).set(available);
 };

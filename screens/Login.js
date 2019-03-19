@@ -13,7 +13,8 @@ const styles = StyleSheet.create({
   },
   title: {
     alignSelf: 'center',
-    marginTop: 100,
+    marginTop: 120,
+    fontSize: 40,
   },
   facebook: {
     marginTop: 25,
@@ -23,6 +24,11 @@ const styles = StyleSheet.create({
   },
   loginBtn: {
     marginTop: 25,
+    alignSelf: 'center',
+    width: 200,
+  },
+  loginBtnTxt: {
+    marginLeft: 20,
   },
   registerBtn: {
     alignSelf: 'center',
@@ -30,6 +36,10 @@ const styles = StyleSheet.create({
 });
 
 class Login extends React.Component {
+  static navigationOptions = {
+    header: null,
+  }
+
   constructor(props) {
     super(props);
     this.state = {
@@ -65,8 +75,8 @@ class Login extends React.Component {
       <KeyboardAvoidingView behavior="padding" style={{ flex: 1 }}>
         <Content>
           <View style={styles.body}>
-            <H1 style={styles.title}>Welcome to TaskUp!</H1>
-            <Button style={styles.facebook} block large onPress={() => loginWithFacebook()}>
+            <Text style={styles.title}>TaskUp</Text>
+            <Button rounded style={styles.facebook} block large onPress={() => loginWithFacebook()}>
               <Icon active name="logo-facebook" />
               <Text>Continue with Facebook</Text>
             </Button>
@@ -84,9 +94,9 @@ class Login extends React.Component {
                   <Input secureTextEntry onChangeText={text => this.setState({ password: text })} />
                 </Item>
               </Form>
-              <Button style={styles.loginBtn} block onPress={() => this.loginFirebase()}>
+              <Button rounded style={styles.loginBtn} onPress={() => this.loginFirebase()}>
                 <Icon name="md-log-in" />
-                <Text>Sign in</Text>
+                <Text style={styles.loginBtnTxt}>Sign in</Text>
               </Button>
               <Button style={styles.registerBtn} transparent info onPress={() => { Linking.openURL('https://taskup.org'); }}>
                 <Text>Not registered? Register here!</Text>

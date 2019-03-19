@@ -1,28 +1,45 @@
 import React from 'react';
 import { StyleSheet } from 'react-native';
 import {
-  Container, Content, ListItem, Text, Left, Body, Right, Switch, Thumbnail,
+  Container, Content, ListItem, Text, Left,
+  Body, Right, Switch, Thumbnail, View, Button, Icon,
 } from 'native-base';
 import { WebBrowser } from 'expo';
 import PropTypes from 'prop-types';
-import { getTasker, setAllAvailabilities } from '../firebase/tasker';
+import { getTasker } from '../firebase/tasker';
 import TaskList from '../components/ListOfTasks';
 
 const styles = StyleSheet.create({
-  tagline: {
-    textAlign: 'center',
-    fontSize: 11,
+  greenDot: {
+    top: 15,
+    height: 10,
+    width: 10,
+    borderRadius: 100,
+    position: 'absolute',
+    backgroundColor: '#62bd19',
   },
-  availableNow: {
-    flex: 1,
-    justifyContent: 'center',
-    alignItems: 'center',
+  grayDot: {
+    top: 15,
+    height: 10,
+    width: 10,
+    borderRadius: 100,
+    position: 'absolute',
+    backgroundColor: '#696969',
+  },
+  availableBtn: {
+    marginTop: 10,
+    alignSelf: 'center',
+    marginBottom: 10,
+  },
+  noteTagline: {
+    marginTop: 5,
   },
 });
 
 export default class HomeScreen extends React.Component {
   static navigationOptions = {
     title: 'My Availability',
+    headerLeft: null,
   };
 
   static propTypes = {
@@ -64,8 +81,9 @@ export default class HomeScreen extends React.Component {
     });
   }
 
-  onClickAvailableNow = (newState) => {
-    this.setState(newState);
+  onClickAvailableNow = () => {
+    const { availableNow } = this.state;
+    this.setState({ availableNow: !availableNow });
     // Code to make the buttons ungreyed out
     // Fire Firebase that this tasker is looking for tasks
   }
@@ -110,23 +128,28 @@ export default class HomeScreen extends React.Component {
         <Content>
           <ListItem avatar>
             <Left>
-              <Thumbnail source={{ uri: taskerProfile.url }} />
+              <Thumbnail large source={{ uri: taskerProfile.url }} />
+              <View style={availableNow ? styles.greenDot : styles.grayDot} />
             </Left>
             <Body style={{ height: '100%' }}>
               <Text>{userProfile.name}</Text>
-              <Text note>{taskerProfile.tagline}</Text>
+              <Text style={styles.noteTagline} note>{taskerProfile.tagline}</Text>
             </Body>
             <Right>
-              <Text note>Tasks completed: 5</Text>
+              <Text note>Rating: 5/5</Text>
             </Right>
           </ListItem>
-          <ListItem style={{ alignSelf: 'center' }}>
-            <Text style={{ fontWeight: 'bold' }}>Available Now </Text>
-            <Switch
-              onValueChange={value => this.onClickAvailableNow({ availableNow: value })}
-              value={availableNow}
-            />
-          </ListItem>
+          <Button
+            style={styles.availableBtn}
+            success={availableNow}
+            light={!availableNow}
+            iconLeft
+            rounded
+            onPress={this.onClickAvailableNow}
+          >
+            <Icon name={availableNow ? 'md-checkbox-outline' : 'md-square-outline'} />
+            <Text>Available Now</Text>
+          </Button>
           {
             taskerCategories && <TaskList currentCategories={taskerCategories} uid={uid} availableNow={availableNow} />
           }

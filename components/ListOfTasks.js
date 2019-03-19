@@ -1,10 +1,29 @@
 import React from 'react';
-import { View } from 'react-native';
+import { StyleSheet } from 'react-native';
 import {
-  List, ListItem, Text, Body, CheckBox,
+  List, H2, Text, Separator, Button, Icon, View,
 } from 'native-base';
 import PropTypes from 'prop-types';
 import { setAvailability, setAllAvailabilities } from '../firebase/tasker';
+
+const styles = StyleSheet.create({
+  buttons: {
+    flex: 1,
+    marginTop: 10,
+    marginBottom: 10,
+    // flexDirection: 'row',
+    // flexWrap: 'wrap',
+    justifyContent: 'center',
+  },
+  button: {
+    margin: 5,
+    alignSelf: 'center',
+  },
+  categoryTitle: {
+    alignSelf: 'center',
+    marginLeft: -20,
+  },
+});
 
 class TaskList extends React.Component {
   static propTypes = {
@@ -60,7 +79,6 @@ class TaskList extends React.Component {
         });
       }
     }
-
   }
 
   makeCheckboxes(categoryID, subCategoryID, value) {
@@ -85,6 +103,7 @@ class TaskList extends React.Component {
 
   render() {
     const { categories, checks } = this.state;
+    const { availableNow } = this.props;
     return (
       <View>
         {
@@ -92,28 +111,33 @@ class TaskList extends React.Component {
             if (categoryID !== 'category_ids') {
               return (
                 <List key={categoryID}>
-                  <ListItem itemDivider>
-                    <Text>{categoryID}</Text>
-                  </ListItem>
-                  {
-                    Object.keys(categories[categoryID]).map((subCategoryID) => {
-                      if (subCategoryID !== 'sub_category_ids') {
-                        return (
-                          <ListItem key={subCategoryID}>
-                            <CheckBox
+                  <Separator>
+                    <H2 style={styles.categoryTitle}>{categoryID}</H2>
+                  </Separator>
+                  <View style={styles.buttons}>
+                    {
+                      Object.keys(categories[categoryID]).map((subCategoryID) => {
+                        if (subCategoryID !== 'sub_category_ids') {
+                          return (
+                            <Button
                               key={subCategoryID}
-                              checked={checks.get(categoryID).get(subCategoryID).get('available')}
+                              bordered={!checks.get(categoryID).get(subCategoryID).get('available')}
+                              disabled={!availableNow}
                               onPress={() => this.handleCheckbox(categoryID, subCategoryID)}
-                            />
-                            <Body>
+                              style={styles.button}
+                              iconLeft
+                              rounded
+                              small
+                            >
+                              <Icon name={checks.get(categoryID).get(subCategoryID).get('available') ? 'md-checkbox-outline' : 'md-square-outline'} />
                               <Text>{subCategoryID}</Text>
-                            </Body>
-                          </ListItem>
-                        );
-                      }
-                      return null;
-                    })
-                  }
+                            </Button>
+                          );
+                        }
+                        return null;
+                      })
+                    }
+                  </View>
                 </List>
               );
             }

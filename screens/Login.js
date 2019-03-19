@@ -18,6 +18,7 @@ const styles = StyleSheet.create({
   },
   facebook: {
     marginTop: 25,
+    backgroundColor: '#3b5998',
   },
   loginTitle: {
     marginTop: 75,
@@ -26,6 +27,7 @@ const styles = StyleSheet.create({
     marginTop: 25,
     alignSelf: 'center',
     width: 200,
+    backgroundColor: '#001529',
   },
   loginBtnTxt: {
     marginLeft: 20,
@@ -98,8 +100,8 @@ class Login extends React.Component {
                 <Icon name="md-log-in" />
                 <Text style={styles.loginBtnTxt}>Sign in</Text>
               </Button>
-              <Button style={styles.registerBtn} transparent info onPress={() => { Linking.openURL('https://taskup.org'); }}>
-                <Text>Not registered? Register here!</Text>
+              <Button style={styles.registerBtn} transparent dark onPress={() => { Linking.openURL('https://taskup.org'); }}>
+                <Text>Not a tasker yet? Register here!</Text>
               </Button>
             </View>
           </View>

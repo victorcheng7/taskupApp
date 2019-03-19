@@ -11,8 +11,6 @@ const styles = StyleSheet.create({
     flex: 1,
     marginTop: 10,
     marginBottom: 10,
-    // flexDirection: 'row',
-    // flexWrap: 'wrap',
     justifyContent: 'center',
   },
   button: {

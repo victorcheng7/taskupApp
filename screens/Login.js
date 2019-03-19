@@ -1,8 +1,33 @@
 import React from 'react';
-import { Button, View, Content, Grid, Container, Header, Text, Form, Item, Input } from 'native-base';
-
-import firebase, { loginWithFacebook, loginWithFirebase } from '../firebase/firebaseInit';
+import {
+  Button, Content, Container, Text, Form, Item, Input, Icon, Label, H1, H3, View,
+} from 'native-base';
+import { StyleSheet, Linking, KeyboardAvoidingView } from 'react-native';
 import { Actions } from 'react-native-router-flux';
+import firebase, { loginWithFacebook, loginWithFirebase } from '../firebase/firebaseInit';
+
+const styles = StyleSheet.create({
+  body: {
+    width: 350,
+    alignSelf: 'center',
+  },
+  title: {
+    alignSelf: 'center',
+    marginTop: 100,
+  },
+  facebook: {
+    marginTop: 25,
+  },
+  loginTitle: {
+    marginTop: 75,
+  },
+  loginBtn: {
+    marginTop: 25,
+  },
+  registerBtn: {
+    alignSelf: 'center',
+  },
+});
 
 class Login extends React.Component {
   constructor(props) {
@@ -37,34 +62,40 @@ class Login extends React.Component {
 
   render() {
     return (
-      <Container>
-        <Header />
+      <KeyboardAvoidingView behavior="padding" style={{ flex: 1 }}>
         <Content>
-          <Button
-            onPress={() => loginWithFacebook()}
-            title="Sign in with facebook"
-            color="#3c50e8"
-          >
-            <Text>Sing in with FB</Text>
-          </Button>
-
-          <Form>
-            <Item>
-              <Input placeholder="Username" type="email" onChangeText={text => this.setState({ email: text })} />
-            </Item>
-            <Item last>
-              <Input placeholder="Password" secureTextEntry onChangeText={text => this.setState({ password: text })} />
-            </Item>
-          </Form>
-          <Button
-            onPress={() => this.loginFirebase()}
-            title="Sign in Manually"
-            color="#3c50e8"
-          >
-            <Text>Sign in manual</Text>
-          </Button>
+          <View style={styles.body}>
+            <H1 style={styles.title}>Welcome to TaskUp!</H1>
+            <Button style={styles.facebook} block large onPress={() => loginWithFacebook()}>
+              <Icon active name="logo-facebook" />
+              <Text>Continue with Facebook</Text>
+            </Button>
+            <H3 style={styles.loginTitle}>Login without Facebook</H3>
+            <View style={styles.loginForm}>
+              <Form>
+                <Item floatingLabel>
+                  <Icon active name="md-person" />
+                  <Label>Email</Label>
+                  <Input type="email" onChangeText={text => this.setState({ email: text })} />
+                </Item>
+                <Item floatingLabel last>
+                  <Icon active name="md-lock" />
+                  <Label>Password</Label>
+                  <Input secureTextEntry onChangeText={text => this.setState({ password: text })} />
+                </Item>
+              </Form>
+              <Button style={styles.loginBtn} block onPress={() => this.loginFirebase()}>
+                <Icon name="md-log-in" />
+                <Text>Sign in</Text>
+              </Button>
+              <Button style={styles.registerBtn} transparent info onPress={() => { Linking.openURL('https://taskup.org'); }}>
+                <Text>Not registered? Register here!</Text>
+              </Button>
+            </View>
+          </View>
         </Content>
-      </Container>
+        <View style={{ height: 100 }} />
+      </KeyboardAvoidingView>
     );
   }
 }

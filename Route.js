@@ -6,8 +6,8 @@ import Login from './screens/Login';
 const Routes = () => (
   <Router navigationBarStyle={{ backgroundColor: '#001529' }}>
     <Scene key="root" headerTintColor="#fff">
-      <Scene key="Login" component={Login} title="Login" initial />
-      <Scene key="Status" component={Status} title="Status" />
+      <Scene key="Login" component={Login} title="Taskup" initial />
+      <Scene key="Status" component={Status} title="My Status" />
     </Scene>
   </Router>
 );

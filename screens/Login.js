@@ -1,8 +1,10 @@
 import React from 'react';
 import {
-  Button, Content, Container, Text, Form, Item, Input, Icon, Label, H1, H3, View,
+  Button, Content, Text, Form, Item, Input, Icon, Label, H3, View,
 } from 'native-base';
-import { StyleSheet, Linking, KeyboardAvoidingView } from 'react-native';
+import {
+  StyleSheet, Linking, KeyboardAvoidingView, Image,
+} from 'react-native';
 import { Actions } from 'react-native-router-flux';
 import firebase, { loginWithFacebook, loginWithFirebase } from '../firebase/firebaseInit';
 
@@ -11,10 +13,10 @@ const styles = StyleSheet.create({
     width: 350,
     alignSelf: 'center',
   },
-  title: {
-    alignSelf: 'center',
-    marginTop: 120,
-    fontSize: 40,
+  logo: {
+    height: 100,
+    width: 'auto',
+    marginTop: 100,
   },
   facebook: {
     marginTop: 25,
@@ -74,10 +76,13 @@ class Login extends React.Component {
 
   render() {
     return (
-      <KeyboardAvoidingView behavior="padding" style={{ flex: 1 }}>
+      <KeyboardAvoidingView behavior="padding" style={{ flex: 1, backgroundColor: '#fff' }}>
         <Content>
           <View style={styles.body}>
-            <Text style={styles.title}>TaskUp</Text>
+            <Image
+              style={styles.logo}
+              source={require('../assets/images/taskupLight.png')}
+            />
             <Button rounded style={styles.facebook} block large onPress={() => loginWithFacebook()}>
               <Icon active name="logo-facebook" />
               <Text>Continue with Facebook</Text>

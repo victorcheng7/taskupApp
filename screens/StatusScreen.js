@@ -133,6 +133,7 @@ export default class HomeScreen extends React.Component {
               <Text note>Rating: 5/5</Text>
             </Right>
           </ListItem>
+          <Text style={{textAlign: 'center'}} note> Sitting around or heading out already? </Text>
           <Button
             style={styles.availableBtn}
             success={available}

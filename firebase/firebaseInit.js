@@ -37,6 +37,27 @@ export const copyFbRecord = (oldRef, newRef) => {
   });
 };
 
+export const moveFbRecordWithPush = async (oldRef, newRef) => {
+  const oldItemRef = firebase.database().ref(oldRef);
+  const newItemRef = firebase.database().ref(newRef);
+  const sucess = await oldItemRef.once('value').then(async (snap) => {
+    if (snap.val() === null) {
+      return true;
+    }
+    const done = await newItemRef.push(snap.val()).then(async (error) => {
+      if (!error) {
+        oldItemRef.remove();
+      } else if (typeof (console) !== 'undefined' && console.error) {
+        console.error(error);
+        return false;
+      }
+      return true;
+    });
+    return done;
+  });
+  return sucess;
+};
+
 
 export const loginWithFacebook = async () => {
   const { type, token } = await Facebook.logInWithReadPermissionsAsync('254638235448042');

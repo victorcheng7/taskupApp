@@ -1,4 +1,4 @@
-import firebase from './firebaseInit';
+import firebase, { moveFbRecord, moveFbRecordWithPush } from './firebaseInit';
 import { getUserProfile } from './user';
 import { getRequestIDs } from './requests';
 
@@ -7,8 +7,10 @@ export const isApplier = uid => firebase.database().ref(`appliers/ids/${uid}`).o
 export const isTasker = uid => firebase.database().ref(`taskers/ids/${uid}`).once('value').then(tasker => tasker.val() !== null);
 
 export const getTasker = (uid, callback) => {
-  firebase.database().ref(`taskers/${uid}`).on('value', async (taskerSnapShot) => {
-    const tasker = taskerSnapShot.val();
+  firebase.database().ref(`taskers/${uid}`).on('value', async (taskerSnapshot) => {
+    const tasker = taskerSnapshot.val();
+    const { categories } = tasker;
+
     const profile = await getUserProfile(uid);
     tasker.profile = profile;
     tasker.profile.uid = uid;
@@ -36,4 +38,13 @@ export const setAllAvailabilities = (categories, available, uid) => {
       setAvailability(categoryID, subCategoryID, available, uid);
     });
   });
+};
+
+export const setStatus = async (categoryID, subCategoryID, msg, uid) => {
+  await moveFbRecordWithPush(`taskers/${uid}/categories/${categoryID}/${subCategoryID}/status`, `statuses/${uid}/categories/${categoryID}/${subCategoryID}/statuses`);
+  const status = {
+    msg,
+    timestamp: Date.now(),
+  };
+  firebase.database().ref(`taskers/${uid}/categories/${categoryID}/${subCategoryID}/status`).set(status);
 };

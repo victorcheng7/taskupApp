@@ -41,10 +41,11 @@ export const setAllAvailabilities = (categories, available, uid) => {
 };
 
 export const setStatus = async (categoryID, subCategoryID, msg, uid) => {
-  await moveFbRecordWithPush(`taskers/${uid}/categories/${categoryID}/${subCategoryID}/status`, `statuses/${uid}/categories/${categoryID}/${subCategoryID}/statuses`);
+  // await moveFbRecordWithPush(`taskers/${uid}/categories/${categoryID}/${subCategoryID}/status`, `statuses/${uid}/categories/${categoryID}/${subCategoryID}/statuses`);
   const status = {
     msg,
     timestamp: Date.now(),
   };
+  firebase.database().ref(`statuses/${uid}/categories/${categoryID}/${subCategoryID}/statuses`).push(status);
   firebase.database().ref(`taskers/${uid}/categories/${categoryID}/${subCategoryID}/status`).set(status);
 };
